@@ -1,4 +1,4 @@
-#! /bin/bash/
+#!/bin/bash
 # vim: 
 
 apt-get update; apt-get upgrade -yqq;
