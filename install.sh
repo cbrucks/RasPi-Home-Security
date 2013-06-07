@@ -1,5 +1,4 @@
-#!/bin/bash
-# vim: 
+#! /bin/bash
 
 function cinfo() {
 	COLOR='\033[01;33m'	# bold yellow
@@ -18,7 +17,7 @@ mv /etc/issue.net /etc/issue.net.backup
 # Install Custom Banner and activate it in the config file
 cp files/banner /etc/issue.net
 cp files/banner /etc/issue
-sed -ir "s/#Banner .*/Banner \/etc\/issue.net/g" /etc/ssh/sshd_config
+sed -ir "s/#*Banner .*/Banner \/etc\/issue.net/g" /etc/ssh/sshd_config
 # TODO:Disable some of the post login banners
 # Restart the ssh server
 service ssh restart
