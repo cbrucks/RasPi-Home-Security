@@ -28,7 +28,9 @@ c_text "Update package repos"
 sudo apt-get update -qq
 
 c_text "Install required packages"
-sudo apt-get install -yqq alsa-utils mpg321
+sudo apt-get install -yqq alsa-utils mpg321 python-setuptools
+sudo easy_install pip
+pip install smtplib
 
 if [ -d init ]; then
   files=$( ls -1 init | grep -G ".sh$" )
