@@ -1,71 +1,58 @@
-import urllib
-import urllib2
-import re
+import smtplib
+from email.mime.text import MIMEText
 
 class SMS:
 
-    def __init__(self):
-        pass
+    def __init__(self): 
+        self.username = "kstonecipher.home@gmail.com"
+        self.password = "20KelseyRocks10&"
+        self.att_suffix = "@mms.att.net" # mobile.mycingular.com
+        self.smtp_server = "smtp.gmail.com:587"
 
-    def _get_code(self):
-        url = 'http://www.onlinetextmessage.com'
-        req = urllib2.Request(url, '')
-        response = urllib2.urlopen(req)
-        html = response.read()
-        code = re.search('(?<=\<input type="HIDDEN" name="code" value=")[0-9]+(?=">)', html)
-        if code == '':
-            raise Exception("Failed to find the code for sms")
-            exit
-        return code
+        self.emergency_numbers = ["8304601396"]
+        self.emergency_message = "EMERGENCY"
+        self.maintenence_numbers = ["8304601396"]
+        self.maintenence_message = "Maintenence"
 
-    def _get_provider(self, phone_number):
-        url = 'http://www.txt2day.com/lookup.php'
-        data = {'action' : 'lookup',
-                'pre' : number[0:3],
-                'ex' : number[3:6],
-                'myButton' : 'Find Provider'}
 
-        data = urllib.urlencode(data)  ##provider checker
-        req = urllib2.Request(url, data)
-        response = urllib2.urlopen(req)
-        html = response.read()
+    def _send_sms(self, phone_numbers=[], message=''):
+        # Verify the phone numbers
+        if not phone_numbers:
+            raise Exception("Recipient Phone Number list can not be empty!")
+            return
+        for number in phone_numbers:
+            if len(number) != 10:
+                raise Exception("Phone Number, "+number+", is not valid! Incorrect length.")
+                return
 
-        if 'Telus' in html:
-            prov = '192'
-        if 'Bell' in html:
-            prov = '48'
-        if 'Rogers' in html:
-            prov = '162'
-        if 'Sprint' in html:
-            prov = '175'
-        if 'T-Mobile' in html:
-            prov = '182'
-        if 'Verizon' in html:
-            prov = '203'
-        if 'Virgin Mobile' in html:
-            prov = '205'
-        if 'Att' in html:
-            prov = '41'
+        # Message to be sent
+        msg = MIMEText(message)
+         
+        # Gmail to Verizon. Change here for different combinations.
+        for i,number in enumerate(phone_numbers):
+            phone_numbers[i] += "@mms.att.net" #mobile.mycingular.com"
+         
+        # Format message to look like an email
+        # message["From"] = email_username
+        # message["To"] = phone_number
+        # message["Subject"] = "From your server!"
+         
+        # Connect and send
+        s = smtplib.SMTP(self.smtp_server)
+        s.starttls()
+        s.login(self.username, self.password)
+        s.sendmail(self.username, phone_numbers, msg.as_string())
+        s.quit()
 
-        if prov == '':
-            raise Exception("Failed To Identify Provider")
-            exit
-        
-        return prov
 
-        
-    def send_sms(self, phone_number, from_addr, subject, message
-        url = 'http://www.onlinetextmessage.com/send.php'
-        data = {'code' : self._get_code(),
-                'number' : phone_number,
-                'from' : from_addr,
-                'remember' : 'n',
-                'subject' : subject,
-                'carrier' : self._get_provider(phone_number),
-                'quicktext' : '',
-                'message' : message,
-                's' : 'Send Message'}
-        data = urllib.urlencode(data)  ##text sender
-        req = urllib2.Request(url, data)
-        response = urllib2.urlopen(req)
-        the_page = response.read() 
+    def send_emergency_sms(self):
+        self._send_sms(self.emergency_numbers, self.emergency_message)
+
+    def send_maintenence_sms(self):
+        self._send_sms(self.maintenence_numbers, self.maintenence_message)
+
+
+if __name__ == "__main__":
+    sms = SMS()
+    sms.send_emergency_sms()
+    sms.send_maintenence_sms() 
