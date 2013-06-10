@@ -3,20 +3,22 @@ import mimetypes
 import email
 import email.mime.application
 import sys
+import ConfigParser
+import json
 
 class Email_Conductor:
-    def __init__(self):
-        self.email = "kstonecipher.home@gmail.com"
-        self.password = "20KelseyRocks10&"
-        self.smtp_server = "smtp.gmail.com:587"
+    def __init__(self, config):
+        self.email = config.get("SMTP","email")
+        self.password = config.get("SMTP","password")
+        self.smtp_server = config.get("SMTP","server")
 
-        self.emergency_emails = ["treflipmaster@gmail.com"]
-        self.emergency_email_subject = "EMERGENCY"
-        self.emergency_email_body = "This is an email from Kelsey's Home Security System.  There has been an emergency."
+        self.emergency_emails = config.get("Emergency","emails").split(",")
+        self.emergency_email_subject = config.get("Emergency","subject")
+        self.emergency_email_body = config.get("Emergency","body")
 
-        self.maintenence_emails = ["treflipmaster@gmail.com"]
-        self.maintenence_email_subject = "Maintenence"
-        self.maintenence_email_body = "This is an email from Kelsey's Home Security System.  Somebody has used your maintenence credentials to enter your apartment."
+        self.maintenence_emails = config.get("Maintenence","emails").split(",")
+        self.maintenence_email_subject = config.get("Maintenence","subject")
+        self.maintenence_email_body = config.get("Maintenence", "body")
 
 
     def _send_email(self, to_addr=[], subject="", body="""""", files=[]): 
