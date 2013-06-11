@@ -1,18 +1,21 @@
 import smtplib
 from email.mime.text import MIMEText
+import ConfigParser
 
 class SMS:
 
-    def __init__(self): 
-        self.username = "kstonecipher.home@gmail.com"
-        self.password = "20KelseyRocks10&"
-        self.att_suffix = "@mms.att.net" # mobile.mycingular.com
-        self.smtp_server = "smtp.gmail.com:587"
+    def __init__(self, config): 
+        self.username = config.get("SMTP","email")
+        self.password = config.get("SMTP","password")
+        self.att_suffix = config.get("SMTP","att_suffix")
+        self.smtp_server = config.get("SMTP","server")
 
-        self.emergency_numbers = ["8304601396"]
-        self.emergency_message = "EMERGENCY"
-        self.maintenence_numbers = ["8304601396"]
-        self.maintenence_message = "Maintenence"
+        self.emergency_numbers = config.get("Emergency","phone_numbers").split(",")
+        self.emergency_subject = config.get("Emergency","subject")
+        self.emergency_message = config.get("Emergency","body")
+        self.maintenence_numbers = config.get("Maintenence","phone_numbers").split(",")
+        self.maintenence_subject = config.get("Maintenence","subject")
+        self.maintenence_message = config.get("Maintenence","body")
 
 
     def _send_sms(self, phone_numbers=[], message=''):
@@ -30,12 +33,12 @@ class SMS:
          
         # Gmail to Verizon. Change here for different combinations.
         for i,number in enumerate(phone_numbers):
-            phone_numbers[i] += "@mms.att.net" #mobile.mycingular.com"
+            phone_numbers[i] += self.att_suffix
          
         # Format message to look like an email
         # message["From"] = email_username
         # message["To"] = phone_number
-        # message["Subject"] = "From your server!"
+        msg["Subject"] = self.maintenence_subject
          
         # Connect and send
         s = smtplib.SMTP(self.smtp_server)

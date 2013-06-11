@@ -16,11 +16,17 @@ if __name__ == "__main__":
 
 
     ip = IP()
-    sound = Sound()
+    sound = Sound(config)
     email_conductor = Email_Conductor(config)
-    sms = SMS()
+    sms = SMS(config)
+
+    sound.play_button_sound()
+    sound.play_warning_sound()
+    sound.play_armed_sound()
+    sound.play_alarm_sound()
 
     email_conductor.send_emergency_email()
     email_conductor.send_maintenence_email()
 
-
+    sms.send_emergency_sms()
+    sms.send_maintenence_sms()
